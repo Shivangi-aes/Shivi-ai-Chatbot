@@ -1,30 +1,35 @@
-async function sendMessage() {
-  const userInput = document.getElementById("user-input").value;
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("user-input");
   const chatBox = document.getElementById("chat-box");
 
-  chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
-  document.getElementById("user-input").value = "";
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer "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"
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: userInput }]
-      })
-    });
+    // Show user message
+    chatBox.innerHTML += `<div class="user">You: ${message}</div>`;
+    input.value = "";
 
-    const data = await response.json();
-    const botMessage = data.choices[0].message.content;
+    // Simulate AI response
+    setTimeout(() => {
+      let response = getBotReply(message);
+      chatBox.innerHTML += `<div class="bot">Shivi AI: ${response}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 800);
+  });
 
-    chatBox.innerHTML += `<p><strong>Bot:</strong> ${botMessage}</p>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  } catch (error) {
-    chatBox.innerHTML += `<p><strong>Bot:</strong> Sorry, I couldn’t reach the server 😞</p>`;
-    console.error("API Error:", error);
+  function getBotReply(msg) {
+    msg = msg.toLowerCase();
+    if (msg.includes("hello") || msg.includes("hi")) {
+      return "Hello! I'm your chatbot 🤖";
+    } else if (msg.includes("name")) {
+      return "My name is Shivi AI!";
+    } else {
+      return "I'm still learning! 🧠";
+    }
   }
-}
+});
+
+ 
