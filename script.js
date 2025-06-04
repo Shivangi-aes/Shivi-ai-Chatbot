@@ -12,14 +12,30 @@ function appendMessage(sender, text) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+async function getBotReply(message) {
+  appendMessage("bot", "Typing...");
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer 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"
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: message }]
+    })
+  });
+  const data = await response.json();
+  document.querySelector(".message.bot:last-child").remove();
+  appendMessage("bot", data.choices[0].message.content);
+}
+
 sendBtn.addEventListener("click", () => {
   const text = userInput.value.trim();
   if (text) {
     appendMessage("user", text);
     userInput.value = "";
-    setTimeout(() => {
-      appendMessage("bot", `I'm still learning, but here's something: "${text}" back to you! ✨`);
-    }, 600);
+    getBotReply(text);
   }
 });
 
@@ -38,5 +54,7 @@ micBtn.addEventListener("click", () => {
     sendBtn.click();
   };
 });
+
+
 
   
