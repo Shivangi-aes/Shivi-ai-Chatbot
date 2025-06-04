@@ -1,35 +1,42 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("chat-form");
-  const input = document.getElementById("user-input");
-  const chatBox = document.getElementById("chat-box");
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
+const micBtn = document.getElementById("mic-btn");
+const imageInput = document.getElementById("image-input");
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const message = input.value.trim();
-    if (!message) return;
+function appendMessage(sender, text) {
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
+  message.textContent = text;
+  chatBox.appendChild(message);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-    // Show user message
-    chatBox.innerHTML += `<div class="user">You: ${message}</div>`;
-    input.value = "";
-
-    // Simulate AI response
+sendBtn.addEventListener("click", () => {
+  const text = userInput.value.trim();
+  if (text) {
+    appendMessage("user", text);
+    userInput.value = "";
     setTimeout(() => {
-      let response = getBotReply(message);
-      chatBox.innerHTML += `<div class="bot">Shivi AI: ${response}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }, 800);
-  });
-
-  function getBotReply(msg) {
-    msg = msg.toLowerCase();
-    if (msg.includes("hello") || msg.includes("hi")) {
-      return "Hello! I'm your chatbot 🤖";
-    } else if (msg.includes("name")) {
-      return "My name is Shivi AI!";
-    } else {
-      return "I'm still learning! 🧠";
-    }
+      appendMessage("bot", `I'm still learning, but here's something: "${text}" back to you! ✨`);
+    }, 600);
   }
 });
 
- 
+userInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendBtn.click();
+});
+
+micBtn.addEventListener("click", () => {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-IN";
+  recognition.start();
+
+  recognition.onresult = function (event) {
+    const transcript = event.results[0][0].transcript;
+    userInput.value = transcript;
+    sendBtn.click();
+  };
+});
+
+  
