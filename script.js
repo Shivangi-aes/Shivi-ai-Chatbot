@@ -14,12 +14,15 @@ function appendMessage(sender, text) {
 
 async function getBotReply(message) {
   appendMessage("bot", "Typing...");
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer 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"
-    },
+  fetch('http://localhost:3000/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text })
+  })
+  .then(res => res.json())
+  .then(data => appendMessage("bot", data.reply))
+  .catch(err => appendMessage("bot", "Sorry, something went wrong."));
+
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: message }]
